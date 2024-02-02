@@ -9,6 +9,7 @@ module.exports = {
     password: 'leo45gkm',
     database: 'test_project',
     charset: 'utf8',
+    port:1433,
     options: {
       encrypt: true, // For Azure SQL Database
       trustServerCertificate: true, // Added for SSL trust

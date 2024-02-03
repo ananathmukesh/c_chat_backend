@@ -49,7 +49,7 @@ const signup = async (req, res) => {
     email: email,
     password: hashPassword,
     otp_no: sixDigitOTP,
-    otp_verify:"No"
+    otp_verify:"Yes"
     // Add other fields as needed
   }
   db('users')

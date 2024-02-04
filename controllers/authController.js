@@ -172,12 +172,30 @@ const getusers = async(req,res)=>{
 
 try {
   // const allUsers = await db('users').select('id','profile_image','firstname','pinned').whereNot('id',id);
-  const allUsers = await db.raw(`SELECT id,profile_image as img,CONCAT(firstname, ' ', lastname) as name,
-  (SELECT TOP 1 time FROM message m WHERE m.sender_id=users.id ORDER BY message DESC) as time,
-  (SELECT TOP 1 message FROM message m WHERE m.sender_id=users.id ORDER BY id DESC) as msg,
-  (SELECT TOP 1 unread FROM message m WHERE m.sender_id=users.id ORDER BY message DESC) as unread,
-  (SELECT TOP 1 chatmaster_id FROM chatmaster ch WHERE (ch.sender_id=${id} and ch.receiver_id=users.id) or (ch.sender_id=users.id and ch.receiver_id=${id})) AS chatmasterid
-   FROM users WHERE id != ${id}`);
+  const allUsers = await db
+  .select(
+    'id',
+    { img: 'profile_image' },
+    db.raw('CONCAT(firstname, ?, lastname) as name', [' ']),
+    db.raw(`
+      (SELECT TOP 1 time FROM message m WHERE m.sender_id = users.id ORDER BY message DESC) as time
+    `),
+    db.raw(`
+      (SELECT TOP 1 message FROM message m WHERE m.sender_id = users.id ORDER BY id DESC) as msg
+    `),
+    db.raw(`
+      (SELECT TOP 1 unread FROM message m WHERE m.sender_id = users.id ORDER BY message DESC) as unread
+    `),
+    db.raw(`
+      (SELECT TOP 1 chatmaster_id FROM chatmaster ch
+        WHERE (ch.sender_id = ? AND ch.receiver_id = users.id)
+          OR (ch.sender_id = users.id AND ch.receiver_id = ?)
+      ) AS chatmasterid
+    `, [id, id])
+  )
+  .from('users')
+  .where('id', '<>', id);
+
   if(!allUsers){
     json = httpstatus.invalidResponse({message:'Users Not Found'});
     return res.end(json);

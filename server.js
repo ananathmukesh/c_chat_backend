@@ -45,9 +45,10 @@ try {
   })
 
 
- 
+  app.use('../backend/assets/SndRcvdAudio', express.static(path.join(__dirname, 'uploads')));
 
-  livedb.raw('SELECT 1')
+
+  db.raw('SELECT 1')
   .then(() => {
     console.log('Connected to the database!');
   })

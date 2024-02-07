@@ -10,14 +10,15 @@ const {
     reactionUpdate,
     TimeLine,
     cheackChatMaster,
-    editMsg
+    editMsg,
+    uploadAudio
  } = require('../controllers/chatController');
 
 
  const path = require('path');
  const multer = require('multer');
 
-
+ const uploads = multer({ dest: '../uploads' });
 
 
 
@@ -27,10 +28,11 @@ const {
 
     if (isImage(file)) {
       destinationPath += '/SndRcvdImage'; // If it's an image, use SndRcvdImage folder
-    } else if (isPDF(file)) {
+    } 
+    else if (isPDF(file)) {
       destinationPath += '/SndRcvdPDF'; // If it's a PDF, use SndRcvdPDF folder
     }
-    else if (isAudio(file)) {
+      else if (isAudio(file)) {
         destinationPath += '/SndRcvdAudio'; // If it's an audio file, use SndRcvdAudio folder
       }
 
@@ -39,7 +41,7 @@ const {
       }
     else {
       // Handle other file types or set a default folder
-      destinationPath += '/OtherFiles';
+      destinationPath += '/SndRcvdAudio';
     }
 
     cb(null, destinationPath);
@@ -106,5 +108,6 @@ const upload = multer({ storage: storage });
  router.post('/TimeLine',TimeLine);
  router.post('/StarChat',cheackChatMaster);
  router.post('/editConversation',editMsg);
+ router.post('/mp3',uploads.single('audio'),uploadAudio);
 
 module.exports = router;

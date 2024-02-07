@@ -1,8 +1,11 @@
-const db = require("../database/liveServer");
+const db = require("../database/db");
 const httpstatus = require("../util/httpstatus");
 const mime = require('mime-types');
 const moment = require('moment');
 const extension = mime.extension('application/pdf');
+const path = require('path');
+const fs = require('fs');
+
 
 const io = require('../util/webSocket'); 
 // console.log(extension);
@@ -68,6 +71,24 @@ const storeMessage = async (req, res) => {
     const formattedDate = moment(currentDate).format('YYYY-MM-DD HH:mm:ss');
 
     if(req.file){
+
+      // try {
+      //   const audioData = req.file.filename;
+      //   const fileName = `audio_${Date.now()}.mp3`;
+      //   const filePath = path.join(__dirname, '../uploads', fileName);
+      //   const buffer = req.file;
+      //   // Save the audio data to a file
+      //   fs.writeFileSync(filePath, audioData);
+    
+      //   // Respond with the file path or any other relevant information
+      //   res.json({ success: true, message: 'Audio saved successfully', filePath,buffer });
+      // } catch (error) {
+      //   console.error('Error saving audio:', error);
+      //   res.status(500).json({ success: false, message: 'Error saving audio' });
+      // }
+
+
+
       const filenamedocs = req.file.filename;
       // Check if the filename indicates an image
       const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
@@ -119,7 +140,7 @@ const isVideo = videoExtensions.some(ext => filenamedocs.toLowerCase().endsWith(
       time: time,
       incoming: income,
       outgoing: outcome,
-      subtype: subtype=='reply' || subtype==='Audio' || subtype=='forward' ? subtype : (docsimg || ''),
+      subtype: subtype=='reply' || subtype==='Audio' || subtype=='forward' || subtype=='textwithemoji' ? subtype : (docsimg || ''),
       chatmaster_id: chatmaster_id,
       img: req.file ? req.file.filename : '',
       unread:'',
@@ -431,8 +452,14 @@ const incrementedNumericPart = numericPart !== null
 
 // Pad the incremented numeric part with leading zeros
 const paddedNumericPart = `CHAT${String(incrementedNumericPart).padStart(numericPart.length, '0')}`;
-
-    return paddedNumericPart;
+if (maxChatmasterId.maxChatmasterId === null) {
+  console.log('The maxChatmasterId is null');
+  return 'CHAT00001';
+} else {
+  console.log('The maxChatmasterId is:', maxChatmasterId.maxChatmasterId);
+  return paddedNumericPart;
+}
+    
   } catch (error) {
     console.error('Error creating new chatmaster:', error.message);
     throw error;
@@ -573,7 +600,24 @@ const editMsg = async(req,res)=> {
   }
 }
 
+const uploadAudio = async(req,res) => {
+  console.log(req);
 
+  try {
+    const audioData = req.file.filename;
+    const fileName = `audio_${Date.now()}.mp3`;
+    const filePath = path.join(__dirname, '../uploads', fileName);
+    const buffer = req.file;
+    // Save the audio data to a file
+    fs.writeFileSync(filePath, audioData);
+
+    // Respond with the file path or any other relevant information
+    res.json({ success: true, message: 'Audio saved successfully', filePath,buffer });
+  } catch (error) {
+    console.error('Error saving audio:', error);
+    res.status(500).json({ success: false, message: 'Error saving audio' });
+  }
+}
 
 module.exports = {
   getMsgSenderReceiver,
@@ -585,5 +629,6 @@ module.exports = {
   TimeLine,
   cheackChatMaster,
   cheackChatMaster,
-  editMsg
+  editMsg,
+  uploadAudio
 };

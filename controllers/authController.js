@@ -49,7 +49,7 @@ const signup = async (req, res) => {
     email: email,
     password: hashPassword,
     otp_no: sixDigitOTP,
-    otp_verify:"No"
+    otp_verify:"Yes"
     // Add other fields as needed
   }
   db('users')
@@ -175,8 +175,7 @@ try {
   const allUsers = await db.raw(`SELECT id,profile_image as img,CONCAT(firstname, ' ', lastname) as name,
   (SELECT TOP 1 time FROM message m WHERE m.sender_id=users.id ORDER BY message DESC) as time,
   (SELECT TOP 1 message FROM message m WHERE m.sender_id=users.id ORDER BY id DESC) as msg,
-  (SELECT TOP 1 unread FROM message m WHERE m.sender_id=users.id ORDER BY message DESC) as unread,
-  (SELECT TOP 1 chatmaster_id FROM chatmaster ch WHERE (ch.sender_id=${id} and ch.receiver_id=users.id) or (ch.sender_id=users.id and ch.receiver_id=${id})) AS chatmasterid
+  (SELECT TOP 1 unread FROM message m WHERE m.sender_id=users.id ORDER BY message DESC) as unread
    FROM users WHERE id != ${id}`);
   if(!allUsers){
     json = httpstatus.invalidResponse({message:'Users Not Found'});

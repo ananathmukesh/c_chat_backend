@@ -452,14 +452,8 @@ const incrementedNumericPart = numericPart !== null
 
 // Pad the incremented numeric part with leading zeros
 const paddedNumericPart = `CHAT${String(incrementedNumericPart).padStart(numericPart.length, '0')}`;
-if (maxChatmasterId.maxChatmasterId === null) {
-  console.log('The maxChatmasterId is null');
-  return 'CHAT00001';
-} else {
-  console.log('The maxChatmasterId is:', maxChatmasterId.maxChatmasterId);
-  return paddedNumericPart;
-}
-    
+
+    return paddedNumericPart;
   } catch (error) {
     console.error('Error creating new chatmaster:', error.message);
     throw error;

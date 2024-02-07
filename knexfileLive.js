@@ -55,7 +55,7 @@
 require('dotenv').config();
 
 module.exports = {
-  client: 'mssql',
+  client: 'mssql2',
   connection: {
     server: 'sql.freedb.tech',
     user: 'freedb_liveroot',

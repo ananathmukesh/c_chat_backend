@@ -7,7 +7,7 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 
 require('dotenv').config();
-const db = require('./database/db');
+const db = require('./database/liveServer');
 const authrouter = require("./routes/auth");
 const chatrouter = require("./routes/chat");
 const livedb = require("./database/liveServer");

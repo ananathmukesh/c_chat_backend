@@ -228,7 +228,7 @@ try {
   }
 
   var json = httpstatus.successRespone({
-    message: "Chat List",chatlist:allUsers
+    message: "Chat List",chatlist:allUsers[0]
   });
   return res.send(json);
 } catch (error) {

@@ -1,4 +1,4 @@
-const db = require("../database/db");
+const db = require("../database/liveServer");
 const httpstatus = require("../util/httpstatus");
 const mime = require('mime-types');
 const moment = require('moment');

@@ -171,55 +171,57 @@ const getusers = async(req,res)=>{
   const { id,receiver_id } = req.body;
 
 try {
-  const allUsers = await db.raw(`SELECT
-  id,
-  profile_image AS img,
-  CONCAT(firstname, ' ', lastname) AS name,
-  (
-    SELECT
-      MAX(time)
-    FROM
-      message m
-    WHERE
-      m.sender_id = users.id
-  ) AS time,
-  (
-    SELECT
-      message
-    FROM
-      message m
-    WHERE
-      m.sender_id = users.id
-    ORDER BY
-      id DESC
-    LIMIT 1
-  ) AS msg,
-  (
-    SELECT
-      unread
-    FROM
-      message m
-    WHERE
-      m.sender_id = users.id
-    ORDER BY
-      message DESC
-    LIMIT 1
-  ) AS unread,
-  (
-    SELECT
-      chatmaster_id
-    FROM
-      chatmaster ch
-    WHERE
-      (ch.sender_id = ${id} AND ch.receiver_id = users.id)
-      OR (ch.sender_id = users.id AND ch.receiver_id = ${id})
-    LIMIT 1
-  ) AS chatmasterid
-FROM
-  users
-WHERE
-  id != ${id};
-`);
+  const allUsers = await db.raw(`
+  SELECT
+    id,
+    profile_image AS img,
+    CONCAT(firstname, ' ', lastname) AS name,
+    (
+      SELECT
+        MAX(time)
+      FROM
+        message m
+      WHERE
+        m.sender_id = users.id
+    ) AS time,
+    (
+      SELECT
+        message
+      FROM
+        message m
+      WHERE
+        m.sender_id = users.id
+      ORDER BY
+        id DESC
+      LIMIT 1
+    ) AS msg,
+    (
+      SELECT
+        unread
+      FROM
+        message m
+      WHERE
+        m.sender_id = users.id
+      ORDER BY
+        message DESC
+      LIMIT 1
+    ) AS unread,
+    (
+      SELECT
+        chatmaster_id
+      FROM
+        chatmaster ch
+      WHERE
+        (ch.sender_id = ? AND ch.receiver_id = users.id)
+        OR (ch.sender_id = users.id AND ch.receiver_id = ?)
+      LIMIT 1
+    ) AS chatmasterid
+  FROM
+    users
+  WHERE
+    id != ?
+`, [id, id, id]);
+
   if(!allUsers){
     json = httpstatus.invalidResponse({message:'Users Not Found'});
     return res.end(json);
